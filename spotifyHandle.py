@@ -3,8 +3,8 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-os.environ['SPOTIPY_CLIENT_ID'] = '***'
-os.environ['SPOTIPY_CLIENT_SECRET'] = '***'
+os.environ['SPOTIPY_CLIENT_ID'] = "***"
+os.environ['SPOTIPY_CLIENT_SECRET'] = "***"
 os.environ['SPOTIPY_REDIRECT_URI'] = 'http://localhost:8080/callback'
 
 scope = 'user-read-currently-playing user-read-playback-state user-modify-playback-state'

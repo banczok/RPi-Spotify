@@ -18,6 +18,9 @@ class songInfo:
     isPlaying = ""
     url = ""
     duration = 0
+    marquee = ""
+    marqueeIndex = 0
+    marqueeIndex2 = 0
 
 
 class NewThread(threading.Thread):
@@ -28,21 +31,58 @@ class NewThread(threading.Thread):
 
     def run(self):
         print("Starting " + self.name)
-        while True:
-            refresh()
+        if self.name == "Thread-1":
+            while True:
+                refresh()
+
+        if self.name == "Thread-2":
+            time.sleep(1)
+            while True:
+                marquee()
+
+
+def marquee():
+    if len(songInfo.title) > 20:
+        time.sleep(0.18)
+        if songInfo.marqueeIndex == 0:
+            Ui.updateGUI.title.setText(songInfo.title)
+            time.sleep(15)
+
+        if songInfo.marqueeIndex <= len(songInfo.title):
+            Ui.updateGUI.title.setText(songInfo.title[songInfo.marqueeIndex:])
+
+        songInfo.marqueeIndex += 1
+
+        if songInfo.marqueeIndex > len(songInfo.title):
+            Ui.updateGUI.title.setText(songInfo.marquee[songInfo.marqueeIndex2:])
+
+            if songInfo.marqueeIndex2 == 30:
+                time.sleep(20)
+
+            songInfo.marqueeIndex2 += 1
+
+            if songInfo.marqueeIndex2 > len(songInfo.marquee):
+                songInfo.marqueeIndex2 = 0
+
+    else:
+        Ui.updateGUI.title.setText(songInfo.title)
 
 
 def refresh():
-    title, artist, isPlaying, url, actual, duration = spotifyHandle.getSongInfo()
+    artist, title, isPlaying, url, actual, duration = spotifyHandle.getSongInfo()
     if title != songInfo.title or artist != songInfo.artist or isPlaying != songInfo.isPlaying:
         songInfo.title = title
         songInfo.artist = artist
-        songInfo.isPlaying = isPlaying
         songInfo.url = url
+        songInfo.isPlaying = isPlaying
         songInfo.duration = duration
+        songInfo.marqueeIndex = 0
+        songInfo.marqueeIndex2 = 0
+        songInfo.marquee = ' ' * 30 + title + ' ' * 15
         Ui.refreshImage(Ui.updateGUI)
         Ui.refreshArtistAndTitle(Ui.updateGUI, (artist, title))
         Ui.refreshButton(Ui.updateGUI)
+        print("new")
 
     Ui.updateSlider(Ui.updateGUI, (actual, duration))
     time.sleep(1)
@@ -99,7 +139,6 @@ class Ui(QMainWindow):
         self.playButton.setStyleSheet("QLabel{background-color: #d4d4d4} QLabel::hover{background-color: white}")
         self.prevTrackButton.setStyleSheet("QLabel{background-color: #858585} QLabel::hover{background-color: #f2f2f2}")
         self.nextTrackButton.setStyleSheet("QLabel{background-color: #858585} QLabel::hover{background-color: #f2f2f2}")
-        self.status.setStyleSheet(self.stylesheet())
         self.exitButton.setStyleSheet("QLabel::hover{background-color: #c93434;} ")
         self.mini.setStyleSheet("QLabel::hover{background-color: #858585;}")
         self.artist.setStyleSheet("color: #858585; font: 9pt")
@@ -107,38 +146,10 @@ class Ui(QMainWindow):
 
         self.show()
 
-    def stylesheet(self):
-        return """
-            QSlider::groove:horizontal:hover {
-                background: red;
-                height: 10px;
-            }
-    
-            QSlider::groove:horizontal {
-                background: #858585;
-                border: 1px solid;
-                height: 5px;
-                
-            }
-
-            QSlider::sub-page:horizontal {
-                background: #858585;
-                height: 5px;
-                
-            }
-
-            QSlider::add-page:horizontal {
-                background: #484848;
-                height: 5px;
-
-            }
-        """
-
     def onClickSliderPosition(self, event):
         x = event.pos().manhattanLength()
-        value = round((99 * x / self.status.width()) - 5)
+        value = round((100 * x / self.status.width()) - 5)
         duration = songInfo.duration
-
         spotifyHandle.seekToPosition(value / 100 * duration)
 
     def updateSlider(self, value):
@@ -188,8 +199,8 @@ class Ui(QMainWindow):
             self.playButton.setPixmap(QPixmap('img\\play.png'))
 
     def refreshArtistAndTitle(self, value):
-        self.artist.setText(' '.join(map(str, value[1])))
-        self.title.setText(value[0])
+        self.artist.setText(' '.join(map(str, value[0])))
+        self.title.setText(value[1])
 
     def refreshImage(self):
         image_url = songInfo.url
@@ -211,5 +222,6 @@ class Ui(QMainWindow):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     gui = Ui()
+    NewThread()
     NewThread()
     sys.exit(app.exec_())
