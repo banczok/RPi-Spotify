@@ -35,3 +35,4 @@ def gpioListener():
             spotifyHandle.pause_play(main.songInfo.isPlaying)
 
         time.sleep(.5)
+

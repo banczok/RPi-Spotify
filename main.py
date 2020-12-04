@@ -9,6 +9,7 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.Qt import *
 from PyQt5.QtGui import *
 
+import gpio
 import spotifyHandle
 
 
@@ -37,6 +38,10 @@ class NewThread(threading.Thread):
         if self.name == "Thread-1":
             while True:
                 refresh()
+
+        elif self.name == "Thread-2":
+            gpio.gpioListener()
+            print("XS")
 
         else:
             time.sleep(1)
@@ -83,7 +88,7 @@ def refresh():
         songInfo.marqueeIndex2 = 0
         songInfo.marquee = ' ' * 30 + title + ' ' * 15
 
-        if threading.active_count() < 3 and len(title) > 20:
+        if threading.active_count() < 4 and len(title) > 20:
             NewThread()
 
         Ui.refreshImage(Ui.updateGUI)
@@ -228,5 +233,6 @@ class Ui(QMainWindow):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     gui = Ui()
+    NewThread()
     NewThread()
     sys.exit(app.exec_())
