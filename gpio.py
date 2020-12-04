@@ -1,9 +1,4 @@
-import time
-
-import RPi.GPIO as GPIO
-
-import songInfo as sI
-import spotifyHandle
+# import RPi.GPIO as GPIO
 
 
 class pinNumbers:
@@ -12,6 +7,7 @@ class pinNumbers:
     playPause = 12
 
 
+"""
 def gpioListener():
     GPIO.setwarnings(False)
 
@@ -35,3 +31,4 @@ def gpioListener():
             spotifyHandle.pause_play(sI.songInfo.isPlaying)
 
         time.sleep(.25)
+"""

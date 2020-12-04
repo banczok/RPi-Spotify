@@ -125,7 +125,7 @@
             </property>
             <property name="font">
                 <font>
-                    <family>Segoe UI Semibold</family>
+                    <family>Proxy 3</family>
                     <weight>75</weight>
                     <bold>true</bold>
                 </font>
@@ -145,7 +145,7 @@
             </property>
             <property name="font">
                 <font>
-                    <family>Segoe UI Semibold</family>
+                    <family>Sylfaen</family>
                     <weight>75</weight>
                     <bold>true</bold>
                 </font>

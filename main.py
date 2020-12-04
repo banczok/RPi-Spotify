@@ -9,7 +9,6 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.Qt import *
 from PyQt5.QtGui import *
 
-import gpio
 import songInfo as sI
 import spotifyHandle
 
@@ -30,8 +29,8 @@ class NewThread(threading.Thread):
                 refresh()
 
         elif self.name == "Thread-2":
-            gpio.gpioListener()
-
+            # gpio.gpioListener()
+            pass
         else:
             time.sleep(1)
             while True:
@@ -107,6 +106,7 @@ class Ui(QMainWindow):
         self.setWindowTitle("Spotify Widget")
         self.setWindowIcon(QIcon("img\\icon.ico"))
         self.setMouseTracking(True)
+        QFontDatabase.addApplicationFont("img/Montserrat-SemiBold.ttf")
         self.setWindowFlags(Qt.FramelessWindowHint)
         Ui.updateGUI = self
 
@@ -120,7 +120,11 @@ class Ui(QMainWindow):
         self.playButton.mousePressEvent = self.playPause
 
         self.title = self.findChild(QLabel, "title")
+        self.title.setFont(QFont("Montserrat-SemiBold"))
+
         self.artist = self.findChild(QLabel, "artist")
+        self.artist.setFont(QFont("Montserrat-SemiBold"))
+
         self.cover = self.findChild(QLabel, 'cover')
 
         self.exitButton = self.findChild(QLabel, 'exit')
