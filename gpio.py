@@ -22,6 +22,8 @@ def gpioListener():
     GPIO.setup(pinNumbers.prevTrack, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(pinNumbers.playPause, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+    time.sleep(2)
+
     while True:
         if GPIO.input(pinNumbers.nextTrack) == GPIO.HIGH:
             spotifyHandle.next_track()
