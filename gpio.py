@@ -2,7 +2,7 @@ import time
 
 import RPi.GPIO as GPIO
 
-import main
+import songInfo as sI
 import spotifyHandle
 
 
@@ -32,7 +32,6 @@ def gpioListener():
             spotifyHandle.prev_track()
 
         if GPIO.input(pinNumbers.playPause) == GPIO.HIGH:
-            spotifyHandle.pause_play(main.songInfo.isPlaying)
+            spotifyHandle.pause_play(sI.songInfo.isPlaying)
 
-        time.sleep(.5)
-
+        time.sleep(.25)

@@ -10,18 +10,8 @@ from PyQt5.Qt import *
 from PyQt5.QtGui import *
 
 import gpio
+import songInfo as sI
 import spotifyHandle
-
-
-class songInfo:
-    artist = ""
-    title = ""
-    isPlaying = ""
-    url = ""
-    duration = 0
-    marquee = ""
-    marqueeIndex = 0
-    marqueeIndex2 = 0
 
 
 class NewThread(threading.Thread):
@@ -41,7 +31,6 @@ class NewThread(threading.Thread):
 
         elif self.name == "Thread-2":
             gpio.gpioListener()
-            print("XS")
 
         else:
             time.sleep(1)
@@ -51,26 +40,26 @@ class NewThread(threading.Thread):
 
 def marquee():
     time.sleep(0.18)
-    if len(songInfo.title) > 20:
-        if songInfo.marqueeIndex == 0:
-            Ui.updateGUI.title.setText(songInfo.title)
+    if len(sI.songInfo.title) > 20:
+        if sI.songInfo.marqueeIndex == 0:
+            Ui.updateGUI.title.setText(sI.songInfo.title)
             time.sleep(15)
 
-        if songInfo.marqueeIndex <= len(songInfo.title):
-            Ui.updateGUI.title.setText(songInfo.title[songInfo.marqueeIndex:])
+        if sI.songInfo.marqueeIndex <= len(sI.songInfo.title):
+            Ui.updateGUI.title.setText(sI.songInfo.title[sI.songInfo.marqueeIndex:])
 
-        songInfo.marqueeIndex += 1
+        sI.songInfo.marqueeIndex += 1
 
-        if songInfo.marqueeIndex > len(songInfo.title):
-            Ui.updateGUI.title.setText(songInfo.marquee[songInfo.marqueeIndex2:])
+        if sI.songInfo.marqueeIndex > len(sI.songInfo.title):
+            Ui.updateGUI.title.setText(sI.songInfo.marquee[sI.songInfo.marqueeIndex2:])
 
-            if songInfo.marqueeIndex2 == 30:
+            if sI.songInfo.marqueeIndex2 == 30:
                 time.sleep(20)
 
-            songInfo.marqueeIndex2 += 1
+            sI.songInfo.marqueeIndex2 += 1
 
-            if songInfo.marqueeIndex2 > len(songInfo.marquee):
-                songInfo.marqueeIndex2 = 0
+            if sI.songInfo.marqueeIndex2 > len(sI.songInfo.marquee):
+                sI.songInfo.marqueeIndex2 = 0
     else:
         print("Killing thread")
         sys.exit()
@@ -78,15 +67,15 @@ def marquee():
 
 def refresh():
     artist, title, isPlaying, url, actual, duration = spotifyHandle.getSongInfo()
-    if title != songInfo.title or artist != songInfo.artist or isPlaying != songInfo.isPlaying:
-        songInfo.title = title
-        songInfo.artist = artist
-        songInfo.url = url
-        songInfo.isPlaying = isPlaying
-        songInfo.duration = duration
-        songInfo.marqueeIndex = 0
-        songInfo.marqueeIndex2 = 0
-        songInfo.marquee = ' ' * 30 + title + ' ' * 15
+    if title != sI.songInfo.title or artist != sI.songInfo.artist or isPlaying != sI.songInfo.isPlaying:
+        sI.songInfo.title = title
+        sI.songInfo.artist = artist
+        sI.songInfo.url = url
+        sI.songInfo.isPlaying = isPlaying
+        sI.songInfo.duration = duration
+        sI.songInfo.marqueeIndex = 0
+        sI.songInfo.marqueeIndex2 = 0
+        sI.songInfo.marquee = ' ' * 30 + title + ' ' * 15
 
         if threading.active_count() < 4 and len(title) > 20:
             NewThread()
@@ -160,7 +149,7 @@ class Ui(QMainWindow):
     def onClickSliderPosition(self, event):
         x = event.pos().manhattanLength()
         value = round((100 * x / self.status.width()) - 5)
-        duration = songInfo.duration
+        duration = sI.songInfo.duration
         spotifyHandle.seekToPosition(value / 100 * duration)
 
     def updateSlider(self, value):
@@ -200,22 +189,22 @@ class Ui(QMainWindow):
         super().mouseReleaseEvent(event)
 
     def playPause(self, event):
-        spotifyHandle.pause_play(songInfo.isPlaying)
+        spotifyHandle.pause_play(sI.songInfo.isPlaying)
         self.refreshButton()
 
     def refreshButton(self):
-        if songInfo.isPlaying:
-            self.playButton.setPixmap(QPixmap('img\\pause.png'))
+        if sI.songInfo.isPlaying:
+            self.playButton.setPixmap(QPixmap('img/pause.png'))
         else:
-            self.playButton.setPixmap(QPixmap('img\\play.png'))
+            self.playButton.setPixmap(QPixmap('img/play.png'))
 
     def refreshArtistAndTitle(self, value):
         self.artist.setText(' '.join(map(str, value[0])))
         self.title.setText(value[1])
 
     def refreshImage(self):
-        image_url = songInfo.url
-        filename = "img\\cover.jpg"
+        image_url = sI.songInfo.url
+        filename = "img/cover.jpg"
         r = requests.get(image_url, stream=True)
         if r.status_code == 200:
             r.raw.decode_content = True
@@ -223,9 +212,9 @@ class Ui(QMainWindow):
             with open(filename, 'wb') as f:
                 shutil.copyfileobj(r.raw, f)
 
-            path = 'img\\cover.jpg'
+            path = 'img/cover.jpg'
         else:
-            path = 'img\\no-cover.png'
+            path = 'img/no-cover.png'
 
         self.cover.setPixmap(QPixmap(path))
 

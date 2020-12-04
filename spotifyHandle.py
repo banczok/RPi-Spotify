@@ -4,7 +4,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 os.environ['SPOTIPY_CLIENT_ID'] = 'b7364fa298eb4091bd694e2f8ae3a47c'
-os.environ['SPOTIPY_CLIENT_SECRET'] = '680615bf7de34609a1b6482054883893'
+os.environ['SPOTIPY_CLIENT_SECRET'] = '***'
 os.environ['SPOTIPY_REDIRECT_URI'] = 'http://localhost:8080/callback'
 
 scope = 'user-read-currently-playing user-read-playback-state user-modify-playback-state'
@@ -23,11 +23,9 @@ def prev_track():
 def pause_play(state):
     if not state:
         sp.start_playback('0d86ccc3eab458e328456e3bd4898100f5187798')
-        return "play"
 
     elif state:
         sp.pause_playback('0d86ccc3eab458e328456e3bd4898100f5187798')
-        return "pause"
 
 
 def seekToPosition(pos):
@@ -35,8 +33,13 @@ def seekToPosition(pos):
 
 
 def getSongInfo():
-    results = sp.current_user_playing_track()
-    if results == None:
+    results = None
+    try:
+        results = sp.current_user_playing_track()
+    except ConnectionError:
+        pass
+
+    if results is None:
         sp.start_playback('0d86ccc3eab458e328456e3bd4898100f5187798')
         sp.pause_playback('0d86ccc3eab458e328456e3bd4898100f5187798')
         results = sp.current_user_playing_track()
