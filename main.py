@@ -24,10 +24,13 @@ class songInfo:
 
 
 class NewThread(threading.Thread):
+    isRunning = False
+
     def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
         self.start()
+        self._is_running = True
 
     def run(self):
         print("Starting " + self.name)
@@ -35,15 +38,15 @@ class NewThread(threading.Thread):
             while True:
                 refresh()
 
-        if self.name == "Thread-2":
+        else:
             time.sleep(1)
             while True:
                 marquee()
 
 
 def marquee():
+    time.sleep(0.18)
     if len(songInfo.title) > 20:
-        time.sleep(0.18)
         if songInfo.marqueeIndex == 0:
             Ui.updateGUI.title.setText(songInfo.title)
             time.sleep(15)
@@ -63,9 +66,9 @@ def marquee():
 
             if songInfo.marqueeIndex2 > len(songInfo.marquee):
                 songInfo.marqueeIndex2 = 0
-
     else:
-        Ui.updateGUI.title.setText(songInfo.title)
+        print("Killing thread")
+        sys.exit()
 
 
 def refresh():
@@ -79,10 +82,13 @@ def refresh():
         songInfo.marqueeIndex = 0
         songInfo.marqueeIndex2 = 0
         songInfo.marquee = ' ' * 30 + title + ' ' * 15
+
+        if threading.active_count() < 3 and len(title) > 20:
+            NewThread()
+
         Ui.refreshImage(Ui.updateGUI)
         Ui.refreshArtistAndTitle(Ui.updateGUI, (artist, title))
         Ui.refreshButton(Ui.updateGUI)
-        print("new")
 
     Ui.updateSlider(Ui.updateGUI, (actual, duration))
     time.sleep(1)
@@ -222,6 +228,5 @@ class Ui(QMainWindow):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     gui = Ui()
-    NewThread()
     NewThread()
     sys.exit(app.exec_())
